@@ -1,18 +1,14 @@
 import http from 'http'
 import crypto from 'crypto'
 import process from 'process';
-
+import { authenticate, verifySignature, hashPassword } from './utils.js';
 
 
 // In-memory storage
-let passwordHash;
+let passwordHash = '';
 const publicKeys = {};
 
-function hashPassword(password) {
-    const salt = crypto.randomBytes(8).toString('hex');
-    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
-    return hash;
-}
+
 
 function createServer(password) {
     passwordHash = hashPassword(password);
@@ -27,7 +23,7 @@ function createServer(password) {
             });
             req.on('end', () => {
                 try {
-                    let authStatus = authenticate(req.headers.authorization);
+                    let authStatus = authenticate(req.headers.authorization, passwordHash);
                     if (authStatus !== true) {
                         res.statusCode = authStatus
                         res.end('Authentication failed.');
@@ -46,7 +42,27 @@ function createServer(password) {
 
 
         } else if (method === "POST") { // Use post for verfiication
-            //TODO 
+            let body = '';
+            req.on('data', (chunk) => {
+                body += chunk.toString();
+            });
+            req.on('end', () => {
+                try {
+                    const { username, message, signature } = JSON.parse(body);
+                    const isValid = verifySignature(message, signature, authenticatedPublicKey);
+                    if (isValid) {
+                        res.statusCode = 200;
+                        res.end('Signature is valid');
+                    } else {
+                        res.statusCode = 400;
+                        res.end('Invalid signature');
+                    }
+                } catch (e) {
+                    console.log('Error parsing request body:', e);
+                    res.statusCode = 400;
+                    res.end('Bad request');
+                }
+            });
         } else {
             res.statusCode = 404;
             res.end('Not found');
@@ -62,15 +78,5 @@ function createServer(password) {
     })
 }
 
-function authenticate(authHeader, res) {
-    if (!authHeader) {
-        return 401;
-    }
-    const [scheme, authKey] = authHeader.split(' ');
-    if (scheme != process.env.SCHEME_NAME || authKey !== passwordHash) {
-        return 403;
-    }
-    return true;
-}
 
 export { createServer };
