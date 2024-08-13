@@ -4,6 +4,7 @@
   "description": "JS Code Challenge Crypto Node Server/Client Example",
   "main": "index.js",
   "scripts": {
+    "start": "node --env-file=.env client.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",
@@ -16,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/rexsilex/Flint-2022/issues"
   },
-  "homepage": "https://github.com/rexsilex/Flint-2022#readme"
+  "homepage": "https://github.com/rexsilex/Flint-2022#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
 }
