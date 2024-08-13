@@ -1,7 +1,9 @@
-import generateKeypair from "./client/generateKeypair.js";
-import { createServer } from "./server.js";
 import fs from 'fs';
 import path from 'path';
+import http from 'http';
+import generateKeypair from "./client/generateKeypair.js";
+import { createServer } from "./server.js";
+import { getKey } from "./utils.js";
 
 const args = process.argv.slice(2)
 let command = null;
@@ -51,6 +53,57 @@ switch (command) {
         }
         createServer(password);
         break;
+
+    case 'submit':
+        let username;
+        let hash;
+        let key;
+
+        if (args.length > 2) {
+            username = args[1]
+            hash = args[2]
+            key = getKey(username)
+            if (key == null) {
+                console.log("Failed to find key with that username.");
+                break;
+            }
+        } else {
+            console.log("You must supply all arguments to submit a new key")
+            break;
+        }
+        const options = {
+            hostname: 'localhost',
+            port: process.env.PORT,
+            path: '',
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': process.env.SCHEME_NAME + ' ' + hash
+            }
+        };
+
+        const contents = { username: username, publicKey: key }
+        let body = JSON.stringify(contents);
+        const req = http.request(options, (res) => {
+            res.on('data', () => {
+                console.log('Response received');
+                if (res.statusCode === 200) {
+                    console.log(`Public key for ${username} stored successfully.`)
+                } else {
+                    console.log('Error submitting public key, please see server logs for details.');
+                }
+            });
+        });
+
+        req.on('error', (e) => {
+            console.log('Problem with request: ' + e.message);
+        });
+        console.log(body);
+        req.write(body);
+        req.end();
+        console.log('Request sent.');
+        break;
+
     case 'sign':
         // TODO (flint)
         signMessage(message);

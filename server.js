@@ -31,20 +31,16 @@ function createServer(password) {
                     if (authStatus !== true) {
                         res.statusCode = authStatus
                         res.end('Authentication failed.');
-                        return;
                     }
-                    console.log(body);
                     const { username, publicKey } = JSON.parse(body);
                     // Store the public key
                     publicKeys[username] = publicKey;
                     res.statusCode = 200;
                     res.end(`Public key for ${username} stored successfully`);
-                    return;
                 } catch (e) {
                     console.log('Error parsing request body:', e);
                     res.statusCode = 400;
                     res.end('Bad request');
-                    return;
                 }
             });
 
@@ -71,7 +67,7 @@ function authenticate(authHeader, res) {
         return 401;
     }
     const [scheme, authKey] = authHeader.split(' ');
-    if (scheme != process.env.SCHEMENAME || authKey !== passwordHash) {
+    if (scheme != process.env.SCHEME_NAME || authKey !== passwordHash) {
         return 403;
     }
     return true;
