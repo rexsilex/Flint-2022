@@ -13,8 +13,9 @@ Setup a .env file for secure variables that are used with the script
 - PASSPHRASE: set the passphrase to use when generating keys
 
 ```
-PASSPHRASE = 'bitpay-ftw-2022!!'
+PASSPHRASE = bitpay-ftw-2022!!
 PORT = 80
+SCHEMENAME = BitPayCustomAuth
 ```
 
 # Usage
