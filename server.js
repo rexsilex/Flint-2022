@@ -6,10 +6,12 @@ import process from 'process';
 
 // In-memory storage
 let passwordHash;
+const publicKeys = {};
 
 function hashPassword(password) {
     const salt = crypto.randomBytes(8).toString('hex');
-    console.log(salt);
+    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+    return hash;
 }
 
 function createServer(password) {
@@ -17,7 +19,42 @@ function createServer(password) {
     const server = http.createServer((req, res) => {
         const { method } = req;
 
-        res.end('Hello World!');
+        //Storing keys should be idempotent, so use put.
+        if (method === 'PUT') {
+            let body = '';
+            req.on('data', (chunk) => {
+                body += chunk.toString();
+            });
+            req.on('end', () => {
+                try {
+                    let authStatus = authenticate(req.headers.authorization);
+                    if (authStatus !== true) {
+                        res.statusCode = authStatus
+                        res.end('Authentication failed.');
+                        return;
+                    }
+                    console.log(body);
+                    const { username, publicKey } = JSON.parse(body);
+                    // Store the public key
+                    publicKeys[username] = publicKey;
+                    res.statusCode = 200;
+                    res.end(`Public key for ${username} stored successfully`);
+                    return;
+                } catch (e) {
+                    console.log('Error parsing request body:', e);
+                    res.statusCode = 400;
+                    res.end('Bad request');
+                    return;
+                }
+            });
+
+
+        } else if (method === "POST") { // Use post for verfiication
+            //TODO 
+        } else {
+            res.statusCode = 404;
+            res.end('Not found');
+        }
 
     });
 
@@ -25,7 +62,19 @@ function createServer(password) {
 
     server.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`)
+        console.log(`Your access key to use as Authorization key is: ${passwordHash}`)
     })
+}
+
+function authenticate(authHeader, res) {
+    if (!authHeader) {
+        return 401;
+    }
+    const [scheme, authKey] = authHeader.split(' ');
+    if (scheme != process.env.SCHEMENAME || authKey !== passwordHash) {
+        return 403;
+    }
+    return true;
 }
 
 export { createServer };
