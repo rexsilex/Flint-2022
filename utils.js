@@ -45,10 +45,10 @@ function authenticate(authHeader, passwordHash) {
     }
     return true;
 }
-function verifySignature(message, signature, publicKey) {
+function verifySignature(username, message, signature) {
     const verifier = crypto.createVerify('RSA-SHA256');
     verifier.update(message);
-    return verifier.verify(publicKey, signature, 'base64');
+    return verifier.verify(getKey(username, 'pub'), signature, 'base64');
 }
 
 async function generateSignature(username, message) {

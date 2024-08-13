@@ -111,9 +111,10 @@ switch (command) {
         console.log(`Signature: ${signature}`);
         break;
     case 'verify':
-        let signature2 = args[1];
-        let message2 = args.slice(1).join(" ");
-        if (verifySignature(message2, signature2)) {
+        let username3 = args[1]
+        let signature2 = args[2];
+        let message2 = args.slice(2).join(" ");
+        if (verifySignature(username3, message2, signature2)) {
             console.log("true, message signature is verified");
         } else {
             console.log('false, message signature is not verified');

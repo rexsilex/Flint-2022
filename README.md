@@ -36,6 +36,9 @@ Use the access key returned from starting the server.
 ## Sign a message
 ``` npm start sign {username} {message}+ ```
 
+## Verify a message
+``` npm start verify {useranme} {signature} {message}+``` 
+
 
 
 
