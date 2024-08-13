@@ -3,7 +3,7 @@ import path from 'path';
 import http from 'http';
 import generateKeypair from "./client/generateKeypair.js";
 import { createServer } from "./server.js";
-import { generateSignature, getKey } from "./utils.js";
+import { generateSignature, getKey, verifySignature } from "./utils.js";
 
 const args = process.argv.slice(2)
 let command = null;
@@ -111,7 +111,13 @@ switch (command) {
         console.log(`Signature: ${signature}`);
         break;
     case 'verify':
-
+        let signature = args[1];
+        let message2 = args.slice(1).join(" ");
+        if (verifySignature(message2, signature)) {
+            console.log("true, message signature is verified");
+        } else {
+            console.log('false, message signature is not verified');
+        }
         break;
     case null:
         // Command missing, do default
