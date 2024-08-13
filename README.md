@@ -4,4 +4,9 @@ JS Code Challenge Crypto Node Server/Client Example
 
 # Prerequisites
 1. Node (v20.16+)
-2. 
+
+
+# Usage
+
+## Generate RSA Keys
+``` npm start generate {filename} ```
