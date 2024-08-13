@@ -1,6 +1,7 @@
 import generateKeypair from "./client/generateKeypair.js";
-import fs from 'node:fs';
-import path from 'node:path';
+import { createServer } from "./server.js";
+import fs from 'fs';
+import path from 'path';
 
 const args = process.argv.slice(2)
 let command = null;
@@ -40,6 +41,16 @@ switch (command) {
                 console.error('Error generating key pair:', err);
             });
         break;
+    case 'server':
+        let password;
+        if (args.length > 1) {
+            password = args[1]
+        } else {
+            console.log("You must supply a password when starting the server.");
+            break;
+        }
+        createServer(password);
+        break;
     case 'sign':
         // TODO (flint)
         signMessage(message);
@@ -50,6 +61,6 @@ switch (command) {
         break;
     case null:
         // Command missing, do default
-        console.log('No command entered. Available commands: [generate, sign, verify]')
+        console.log('No command entered. Available commands: [generate, sign, verify, server]')
 }
 
