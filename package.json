@@ -1,0 +1,19 @@
+{
+  "name": "flint-2022",
+  "version": "1.0.0",
+  "description": "JS Code Challenge Crypto Node Server/Client Example",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rexsilex/Flint-2022.git"
+  },
+  "author": "Flint Barrow",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rexsilex/Flint-2022/issues"
+  },
+  "homepage": "https://github.com/rexsilex/Flint-2022#readme"
+}
