@@ -114,6 +114,8 @@ switch (command) {
         let username3 = args[1]
         let signature2 = args[2];
         let message2 = args.slice(2).join(" ");
+
+        //TODO out of time, make this point at API but it works the same as signing and would share the same code
         if (verifySignature(username3, message2, signature2)) {
             console.log("true, message signature is verified");
         } else {

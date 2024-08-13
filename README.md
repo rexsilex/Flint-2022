@@ -16,7 +16,7 @@ Setup a .env file for secure variables that are used with the script
 
 ```
 PASSPHRASE = bitpay-ftw-2022!!
-PORT = 80
+PORT = 80d
 SCHEME_NAME = BitPayCustomAuth
 ```
 
