@@ -30,9 +30,11 @@ SCHEME_NAME = BitPayCustomAuth
 
 ## Store a generated key 
 Note: Be sure to generate it with the appropriate username first!
-Use the access eky returned from starting the server.
+Use the access key returned from starting the server.
 ``` npm start submit {username} {accessKey} ```
 
+## Sign a message
+``` npm start sign {username} {message}+ ```
 
 
 
@@ -40,7 +42,11 @@ Use the access eky returned from starting the server.
 # API
 
 ## PUT
-Stores a public key for a given username. 
+**Stores a public key for a given username.**
+Must be authenticated with an Authorization header with scheme that matches env variable and the hash provided when starting the server. 
+Send a body JSON object containing the username and the public key.
 
 ## POST 
-Validates a message against stored public key
+**Validates a message against stored public key.**
+Does not require authorization header.
+Send a body JSON object containing the username, the message and the signature. 

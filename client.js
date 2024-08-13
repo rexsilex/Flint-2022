@@ -3,7 +3,7 @@ import path from 'path';
 import http from 'http';
 import generateKeypair from "./client/generateKeypair.js";
 import { createServer } from "./server.js";
-import { getKey } from "./utils.js";
+import { generateSignature, getKey } from "./utils.js";
 
 const args = process.argv.slice(2)
 let command = null;
@@ -62,7 +62,7 @@ switch (command) {
         if (args.length > 2) {
             username = args[1]
             hash = args[2]
-            key = getKey(username)
+            key = getKey(username, 'pub')
             if (key == null) {
                 console.log("Failed to find key with that username.");
                 break;
@@ -105,12 +105,13 @@ switch (command) {
         break;
 
     case 'sign':
-        // TODO (flint)
-        signMessage(message);
+        let username2 = args[1];
+        let message = args.slice(1).join(" ");
+        signature = await generateSignature(username2, message);
+        console.log(`Signature: ${signature}`);
         break;
     case 'verify':
-        // TODO (flint)
-        verifyMessage(message);
+
         break;
     case null:
         // Command missing, do default
