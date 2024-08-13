@@ -8,25 +8,23 @@ function getKey(username, type) {
 
     if (type == 'pub') {
         try {
-            const publicKey = fs.readFileSync(publicKeyPath, 'utf8');
+            const publicKey = fs.readFileSync(keyPath, 'utf8');
             return publicKey;
         } catch (e) {
             console.error(`Error reading public key for ${username}: ${e}`);
             return null;
         }
     } else {
+
         try {
             const encryptedKey = fs.readFileSync(keyPath, 'utf8');
-            const privateKey = crypto.privateDecrypt(
-                {
-                    key: encryptedKey,
-                    passphrase: process.env.PASSPHRASE,
-                    padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-                },
-                Buffer.from('')
-            ).toString('utf8');
-
-            return privateKey;
+            const privateKey = crypto.createPrivateKey({
+                key: encryptedKey,
+                passphrase: process.env.passphrase,
+                format: 'pem',
+                type: 'pkcs8',
+            });
+            return privateKey.export({ type: 'pkcs8', format: 'pem' });
         } catch (e) {
             if (e.code === 'ENOENT') {
                 console.error(`Error: Private key file for ${username} not found.`);
@@ -56,6 +54,7 @@ function verifySignature(message, signature, publicKey) {
 async function generateSignature(username, message) {
     try {
         const privateKeyPem = getKey(username, 'priv');
+        console.log(privateKeyPem);
         const signer = crypto.createSign('RSA-SHA256');
         signer.update(message);
         const signature = signer.sign(privateKeyPem, 'base64');

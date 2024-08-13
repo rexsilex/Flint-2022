@@ -107,13 +107,13 @@ switch (command) {
     case 'sign':
         let username2 = args[1];
         let message = args.slice(1).join(" ");
-        signature = await generateSignature(username2, message);
+        let signature = await generateSignature(username2, message);
         console.log(`Signature: ${signature}`);
         break;
     case 'verify':
-        let signature = args[1];
+        let signature2 = args[1];
         let message2 = args.slice(1).join(" ");
-        if (verifySignature(message2, signature)) {
+        if (verifySignature(message2, signature2)) {
             console.log("true, message signature is verified");
         } else {
             console.log('false, message signature is not verified');
